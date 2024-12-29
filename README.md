@@ -38,6 +38,7 @@ MNISTfy is a web app for recognizing hand-drawn digits using deep learning and p
 4. **Access the app**:
    - Flask backend: [http://localhost:8000](http://localhost:8000)
    - Svelte frontend: [http://localhost:5001](http://localhost:5001)
+   - Server: [http://localhost:5001](http://localhost:5001)
 
 5. **Stop the app**:
    ```bash
@@ -50,7 +51,7 @@ MNISTfy is a web app for recognizing hand-drawn digits using deep learning and p
 The Flask API handles digit recognition and LIME explanations.
 
 ### Frontend (Svelte)
-Svelte app provides an interactive canvas for drawing digits.
+Svelte app provides an interactive canvas for drawing digits and is located at [http://localhost:5001](http://localhost:5001).
 
 ## License
 MIT License.
