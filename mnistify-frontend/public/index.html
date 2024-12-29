@@ -32,14 +32,9 @@
           <button type="button" id="clear" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition">
             Clear
           </button>
-          <div class="space-x-2">
-            <button type="button" id="explain" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition">
-              Explain
-            </button>
-            <button type="button" id="predict" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
-              Predict
-            </button>
-          </div>
+          <button type="button" id="predict" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
+            Predict
+          </button>
         </div>
 
         <div id="result" class="mt-4 text-center text-xl font-semibold text-gray-700"></div>
@@ -72,7 +67,6 @@
       const ctx = canvas.getContext('2d');
       const clearButton = document.getElementById('clear');
       const predictButton = document.getElementById('predict');
-      const explainButton = document.getElementById('explain');
       const result = document.getElementById('result');
       const explanationImage = document.getElementById('explanation-image');
       const explanationPlaceholder = document.getElementById('explanation-placeholder');
@@ -169,31 +163,6 @@
         }
       }
 
-      async function explain() {
-        try {
-          const currentState = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const resized = resizeImageData(currentState, gridSize, gridSize);
-          const inputData = Array.from(resized.data)
-            .filter((_, i) => i % 4 === 3)
-            .map(x => x / 255);
-
-          const response = await fetch('http://127.0.0.1:8000/explain', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pixels: inputData }),
-          });
-
-          const blob = await response.blob();
-          const imgUrl = URL.createObjectURL(blob);
-          displayExplanation(imgUrl);
-
-          ctx.putImageData(currentState, 0, 0);
-        } catch (error) {
-          console.error('Explanation error:', error);
-          explanationPlaceholder.textContent = 'Error: Unable to generate explanation.';
-        }
-      }
-
       function displayExplanation(imgUrl) {
         explanationImage.src = imgUrl;
         explanationImage.classList.remove('hidden');
@@ -237,7 +206,6 @@
       canvas.addEventListener('mouseleave', stopDrawing);
       clearButton.addEventListener('click', clearAll);
       predictButton.addEventListener('click', predict);
-      explainButton.addEventListener('click', explain);
     });
   </script>
 </body>
