@@ -143,7 +143,6 @@ def predict():
     # Convert explanation image to bytes
     plt.figure(figsize=(6, 6))
     plt.imshow(explanation_image)
-    plt.title(f"LIME Explanation for Digit {predicted_class}")
     plt.axis('off')
     
     # Save plot to bytes buffer
@@ -171,7 +170,6 @@ def explain():
     # Convert explanation image to bytes
     plt.figure(figsize=(6, 6))
     plt.imshow(explanation_image)
-    plt.title(f"LIME Explanation for Digit {explained_label}")
     plt.axis('off')
     
     buf = BytesIO()
