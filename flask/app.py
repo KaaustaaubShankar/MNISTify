@@ -12,6 +12,11 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from skimage.color import gray2rgb
 from skimage.segmentation import mark_boundaries
+import matplotlib
+from waitress import serve
+
+matplotlib.use('Agg')  # Use non-GUI backend for matplotlib
+
 
 class ConvNet(nn.Module):
     def __init__(self):
@@ -185,4 +190,4 @@ if __name__ == '__main__':
         print(f"Model file not found at {MODEL_PATH}")
     else:
         print("Starting Flask app...")
-    app.run(debug=True, port=8000)
+    serve(app, host='0.0.0.0', port=8000)
