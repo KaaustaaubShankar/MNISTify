@@ -55,6 +55,3 @@ Svelte app provides an interactive canvas for drawing digits and is located at [
 ## License
 MIT License.
 
----
-
-This version is shorter but still covers the setup and usage steps.
