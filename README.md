@@ -1,6 +1,6 @@
-# MNISTfy - Digit Recognition with LIME Explanations
+# MNISTify - Digit Recognition with LIME Explanations
 
-MNISTfy is a web app for recognizing hand-drawn digits using deep learning and providing LIME-based explanations.
+MNISTify is a web app for recognizing hand-drawn digits using deep learning and providing LIME-based explanations.
 
 ## Features
 - Real-time digit recognition
@@ -22,7 +22,7 @@ MNISTfy is a web app for recognizing hand-drawn digits using deep learning and p
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/KaaustaaubShankar/MNISTify.git
-   cd mnistfy
+   cd mnistify
    ```
 
 2. **Build containers**:
