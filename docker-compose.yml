@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build:
+      context: ./flask  # Path to your Flask app
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      - ./flask:/app
+    depends_on:
+      - mnistify-frontend
+
+  mnistify-frontend:
+    build:
+      context: ./mnistify-frontend  # Path to your Svelte app
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./mnistify-frontend:/app
+    command: npm run dev  # Ensure the dev server starts up
