@@ -21,7 +21,7 @@ MNISTfy is a web app for recognizing hand-drawn digits using deep learning and p
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/mnistfy.git
+   git clone https://github.com/KaaustaaubShankar/MNISTify.git
    cd mnistfy
    ```
 
