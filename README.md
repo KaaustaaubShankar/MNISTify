@@ -2,6 +2,9 @@
 
 MNISTify is a web app for recognizing hand-drawn digits using deep learning and providing LIME-based explanations.
 
+![MNISTify Demo](demo.png)
+
+
 ## Features
 - Real-time digit recognition
 - LIME-based AI explanations
