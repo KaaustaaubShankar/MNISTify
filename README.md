@@ -21,7 +21,7 @@ MNISTfy is a web app for recognizing hand-drawn digits using deep learning and p
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/mnistfy.git
+   git clone https://github.com/KaaustaaubShankar/MNISTify.git
    cd mnistfy
    ```
 
@@ -38,8 +38,7 @@ MNISTfy is a web app for recognizing hand-drawn digits using deep learning and p
 4. **Access the app**:
    - Flask backend: [http://localhost:8000](http://localhost:8000)
    - Svelte frontend: [http://localhost:5001](http://localhost:5001)
-   - Server: [http://localhost:5001](http://localhost:5001)
-
+     
 5. **Stop the app**:
    ```bash
    docker-compose down
@@ -56,6 +55,3 @@ Svelte app provides an interactive canvas for drawing digits and is located at [
 ## License
 MIT License.
 
----
-
-This version is shorter but still covers the setup and usage steps.
