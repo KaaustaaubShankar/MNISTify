@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MNISTfy - Digit Recognizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    canvas {
+      background-color: black;
+      background-image: linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                        linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
+      background-size: 10px 10px;
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div id="predictForm" class="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
+    <h1 class="text-3xl font-extrabold text-blue-600 mb-4 text-center">MNISTfy</h1>
+    <p class="text-gray-600 text-center mb-6">Draw a digit on the grid and let the AI predict it!</p>
+    
+    <div class="flex justify-center">
+      <canvas id="canvas" width="280" height="280" class="border border-gray-300 rounded-lg"></canvas>
+    </div>
+
+    <div class="flex justify-between mt-4">
+      <button type="button" id="clear" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition">
+        Clear
+      </button>
+      <button type="button" id="predict" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
+        Predict
+      </button>
+    </div>
+
+    <div id="result" class="mt-4 text-center text-xl font-semibold text-gray-700"></div>
+    <footer class="mt-6 text-sm text-center text-gray-500">
+      Built with ❤️ by MNISTfy
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('predictForm');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const clearButton = document.getElementById('clear');
+      const predictButton = document.getElementById('predict');
+      const result = document.getElementById('result');
+
+      const gridSize = 28;
+      const cellSize = canvas.width / gridSize;
+
+      let isDrawing = false;
+      let canvasData = null;
+
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+
+      // Prevent default form submission
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        return false;
+      });
+
+      function startDrawing(e) {
+        isDrawing = true;
+        draw(e);
+      }
+
+      function stopDrawing() {
+        isDrawing = false;
+        // Store canvas state after drawing
+        canvasData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      }
+
+      function draw(event) {
+        if (!isDrawing) return;
+
+        event.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const col = Math.floor(x / cellSize);
+        const row = Math.floor(y / cellSize);
+
+        fillCell(col, row, 1.0);
+        fillGradient(col, row);
+      }
+
+      function fillCell(col, row, opacity) {
+        if (col < 0 || col >= gridSize || row < 0 || row >= gridSize) return;
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+      }
+
+      function fillGradient(col, row) {
+        const neighbors = [
+          { col: col - 1, row, opacity: 0.6 },
+          { col: col + 1, row, opacity: 0.6 },
+          { col, row: row - 1, opacity: 0.6 },
+          { col, row: row + 1, opacity: 0.6 },
+          { col: col - 1, row: row - 1, opacity: 0.3 },
+          { col: col + 1, row: row - 1, opacity: 0.3 },
+          { col: col - 1, row: row + 1, opacity: 0.3 },
+          { col: col + 1, row: row + 1, opacity: 0.3 },
+        ];
+
+        neighbors.forEach(({ col, row, opacity }) => fillCell(col, row, opacity));
+      }
+
+      async function predict() {
+        try {
+          // Store current canvas state before any operations
+          const currentState = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          
+          const resized = resizeImageData(currentState, gridSize, gridSize);
+          const inputData = Array.from(resized.data)
+            .filter((_, i) => i % 4 === 3)
+            .map(x => x / 255);
+
+          const response = await fetch('http://127.0.0.1:8000/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pixels: inputData }),
+          });
+
+          const data = await response.json();
+          result.textContent = `Prediction: ${data.prediction}`;
+
+          // Restore the original canvas state
+          ctx.putImageData(currentState, 0, 0);
+        } catch (error) {
+          console.error('Prediction error:', error);
+          result.textContent = 'Error: Unable to predict.';
+        }
+      }
+
+      function resizeImageData(imageData, width, height) {
+        const resizeCanvas = document.createElement('canvas');
+        const resizeCtx = resizeCanvas.getContext('2d');
+        resizeCanvas.width = width;
+        resizeCanvas.height = height;
+
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = imageData.width;
+        tempCanvas.height = imageData.height;
+        tempCtx.putImageData(imageData, 0, 0);
+        resizeCtx.drawImage(tempCanvas, 0, 0, width, height);
+
+        return resizeCtx.getImageData(0, 0, width, height);
+      }
+
+      // Event Listeners
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseleave', stopDrawing);
+
+      clearButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        result.textContent = '';
+        canvasData = null;
+      });
+
+      predictButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        await predict();
+      });
+    });
+  </script>
+</body>
+</html>
